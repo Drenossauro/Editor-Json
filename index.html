@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Geração de JSON</title>
+</head>
+<body>
+
+    <form onsubmit="gerarJSON(event)">
+        <label for="tituloProduto">Título do Produto:</label>
+        <input type="text" id="tituloProduto" required><br><br>
+
+        <label for="valorUnitario">Valor Unitário:</label>
+        <input type="text" id="valorUnitario" required><br><br>
+
+        <label for="quantidadeCombos">Quantidade de Combos (separados por vírgula):</label>
+        <input type="text" id="quantidadeCombos" required><br><br>
+
+        <label for="tagProduto">Tag do Produto:</label>
+        <input type="text" id="tagProduto" required><br><br>
+
+        <button type="submit">Gerar JSON</button>
+    </form>
+
+    <div id="jsonOutput" style="margin-top: 20px; display: none;">
+        <label for="jsonTextArea">JSON Gerado:</label><br>
+        <textarea id="jsonTextArea" readonly style="width: 100%; height: 150px;"></textarea><br><br>
+        <button onclick="copiarJSON()">Copiar JSON</button>
+    </div>
+
+    <script>
+        function gerarJSON(event) {
+            event.preventDefault();
+
+            const tituloProduto = document.getElementById('tituloProduto').value;
+            const valorUnitario = parseFloat(document.getElementById('valorUnitario').value.replace(',', '.'));
+            const quantidadeCombos = document.getElementById('quantidadeCombos').value.split(',').map(Number);
+            const tagProduto = document.getElementById('tagProduto').value;
+
+            const produtos = quantidadeCombos.map(quantidade => {
+                return {
+                    quantidade: quantidade,
+                    valorTotal: quantidade * valorUnitario,
+                    maisVendido: false,
+                    produtoTitulo: `${tituloProduto} - ${quantidade} Chances`,
+                    valorPromocional: quantidade * valorUnitario
+                }
+            });
+
+            const jsonResult = {
+                produtos: produtos,
+                produtoTag: tagProduto,
+                esconder_home_app_pdv: true
+            };
+
+            const jsonOutput = document.getElementById('jsonOutput');
+            const jsonTextArea = document.getElementById('jsonTextArea');
+            jsonTextArea.value = JSON.stringify(jsonResult, null, 2);
+            jsonOutput.style.display = 'block';
+        }
+
+        function copiarJSON() {
+            const jsonTextArea = document.getElementById('jsonTextArea');
+            jsonTextArea.select();
+            document.execCommand('copy');
+            alert('JSON copiado para a área de transferência!');
+        }
+    </script>
+
+</body>
+</html>
